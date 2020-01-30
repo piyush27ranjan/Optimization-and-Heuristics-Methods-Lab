@@ -1,0 +1,86 @@
+d = [0, 100, 450, 690, 210;
+     100, 0, 260, 700, 180;
+     450, 260, 0, 350, 290;
+     690, 700, 350, 0, 320;
+     210, 180, 290, 320, 0];
+ clc, clear all;
+ d = xlsread('d.xlsx');
+ 
+ d_orig = d;
+ start_time = cputime;
+ dim1 = size(d,1);
+ dim12 = size(d);
+ 
+ for i=1:dim1
+     d(i,i) = 10e+06;
+ end
+ 
+ d1 = d;
+ tour = zeros(dim12);
+ cost = 0;
+ min_dist = [];
+ short_path = [];
+ best_nbr_cost = 0;
+ best_nbr = [];
+ 
+ k = 1;
+ for i=1:dim1-1
+     min_dist(i) = min(d1(k,:));
+     short_path(i) = find((d1(k,:) == min_dist(i)),1);
+     cost = cost + min_dist(i);
+     k = short_path(i);
+     d1(k, 1) = 10e+06;
+     for visited_node = 1:length(short_path)
+         d1(k, short_path(visited_node)) = 10e+06;
+     end
+ end
+ 
+ tour(1, short_path(1)) = 1;
+ for i=2:dim1-1
+     tour(short_path(i-1),short_path(i)) = 1;
+ end
+ 
+ last_indx = lenth(short_path) + 1;
+ short_path(last_indx) = 1;
+ tour(k, short_path(last_indx)) = 1;
+ cost = cost + d(k, 1);
+ 
+ crnt_tour = short_path;
+ best_tour = short_path;
+ best_obj = cost;
+ 
+ crnt_tour_cost = cost;
+ 
+ fprintf('\nInitial Solution\n');
+ crnt_tour
+ fprintf('\nInitial Tour cost = %d\t', crnt_tour_cost);
+ nbr_cost = [];
+ 
+ tabu_tenure = zeros(dim12);
+ max_tabu_tenure = round(sqrt(dim1));
+ 
+ penalty = zeros(1, (dim1-1)*(dim1-2)/2);
+ frequency = zeros(dim12);
+ frequency(1,:) = 100000;
+ frequnecy(:,1) = 100000;
+ 
+ for i=1:dim1
+     frequency(i, i) = 100000;
+ end
+ 
+ iter_snc_last_imprv = 0;
+ 
+ best_nbr = crnt_tour;
+ 
+ for iter=1:10000
+     fprintf('\n***** iteration number = %d *****\n', iter);
+     nbr = [];
+     
+     nbr_cost = inf(dim12);
+     for i=1:dim1 - 2
+         for j = i+1:dim1-1
+             if i==1
+                if j-i==1
+                    nbr_cost(crnt_tour(i), crnt_tour(j)) = crnt_tour_cost - d(1, crnt_tour(i)
+ end
+ 

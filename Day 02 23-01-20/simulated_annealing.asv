@@ -1,0 +1,40 @@
+close all;
+clear;
+clc;
+syms x1 x2 real;
+f = 500 - 20*x1 - 26*x2 - 4*x1*x2 + 4*x1*x1 + 3*x2*x2;
+ub = [10, 11];
+lb = [-2, -1];
+candidates = [2, 0; 5, 10; 8, 5; 10, 10];
+values = zeros(1,4);
+for i = 1:length(values)
+    values(i) = subs(f, {x1,x2},[candidates(i,1), candidates(i, 2)]);
+end
+
+temp = mean(values);
+x_old = [4, 5];
+e_old = subs(f, {x1,x2},x_old);
+max_runs = 2;
+c = 0.5;
+x_opt = [4, 5]
+while temp > 0
+    for i = 1:max_runs
+        x_new = [lb(1) + rand()*(ub(1)-lb(1)), lb(2) + rand()*(ub(2)-lb(2))];
+        e_new = subs(f, {x1, x2}, x_new);
+        if(e_new <= e_old)
+            x_opt = x_new;
+        else
+            t = exp((e_old - e_new)/temp);
+            rand_t = rand();
+            if(rand_t < t)
+                x_opt = x_new;
+            else
+                break
+            end
+        end
+    end
+    
+                
+            
+    end
+end
